@@ -29,7 +29,6 @@ window.onload = function(){
 
 //mousedown
     $(can).on("mousedown", function(e){
-        console.log(e);
         oldY = e.offsetY;
         oldX = e.offsetX;
         canvas_mouse_event=true;
@@ -37,7 +36,7 @@ window.onload = function(){
 
 //touchstart iPad用
 $(can).on("touchstart", function(e){
-    console.log(e);
+    preventDefault(e);
     oldY = e.offsetY;
     oldX = e.offsetX;
     canvas_mouse_event=true;
@@ -63,8 +62,10 @@ $(can).on("touchstart", function(e){
         }
     });
 
+
 //mousemove：フラグがTrueだったら描く ※e：イベント引数取得
 $(can).on("touchmove", function(e){
+    preventDefault(e);
     // console.log(e.offsetX);
     if(canvas_mouse_event==true){
         const px = e.offsetX;
@@ -90,7 +91,8 @@ $(can).on("touchmove", function(e){
     });
 
 //touchend：フラグをfalse
-$(can).on("touchend",function(){
+$(can).on("touchend",function(e){
+    preventDefault(e);
     canvas_mouse_event = false;
 });
 
