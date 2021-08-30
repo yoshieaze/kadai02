@@ -13,6 +13,9 @@ const ctx = can.getContext("2d"); //描画するための準備！
 //編集枚数カウント
 let  pages = 1;
 
+//TouchEvent用
+let ongoingTouches = [];
+
 //Worksエリア Canvas用
 
 //2.イベント
@@ -23,49 +26,20 @@ window.onload = function(){
     localStorage.clear();
 }
 
-
-
 // 3. MainCnavasエリア マウス操作
 
+/// A. mouse Action ///
 //mousedown
     $(can).on("mousedown", function(e){
+        console.log(`mousedown`);
         oldY = e.offsetY;
         oldX = e.offsetX;
         canvas_mouse_event=true;
     });
 
-//touchstart iPad用
-$(can).on("touchstart", function(e){
-    preventDefault(e);
-    oldY = e.offsetY;
-    oldX = e.offsetX;
-    canvas_mouse_event=true;
-});
-
 
 //mousemove：フラグがTrueだったら描く ※e：イベント引数取得
-    $(can).on("mousemove", function(e){
-        // console.log(e.offsetX);
-        if(canvas_mouse_event==true){
-            const px = e.offsetX;
-            const py = e.offsetY;
-            ctx.strokeStyle = color.value;
-            ctx.lineWidth = bold_line;
-            ctx.beginPath();
-            ctx.lineJoin= "round";
-            ctx.lineCap = "round";
-            ctx.moveTo(oldX, oldY);
-            ctx.lineTo(px, py);
-            ctx.stroke();
-            oldX = px;
-            oldY = py;
-        }
-    });
-
-
-//mousemove：フラグがTrueだったら描く ※e：イベント引数取得
-$(can).on("touchmove", function(e){
-    preventDefault(e);
+$(can).on("mousemove", function(e){
     // console.log(e.offsetX);
     if(canvas_mouse_event==true){
         const px = e.offsetX;
@@ -84,24 +58,61 @@ $(can).on("touchmove", function(e){
 });
 
 
-
-//mouseup：フラグをfalse
-    $(can).on("mouseup",function(){
-        canvas_mouse_event = false;
-    });
-
-//touchend：フラグをfalse
-$(can).on("touchend",function(e){
-    preventDefault(e);
+//mouseout:マウスがCanvasを離れたらイベントをFalse
+$(can).on("mouseout",function(){
     canvas_mouse_event = false;
 });
 
-    
-//mouseout:マウスがCanvasを離れたらイベントをFalse
-    $(can).on("mouseout",function(){
-        canvas_mouse_event = false;
-    });
-    
+
+//mouseup：フラグをfalse
+$(can).on("mouseup",function(){
+    canvas_mouse_event = false;
+});
+
+
+
+/// B. Touch Action ///
+//touchstart iPad用
+can.addEventListener("touchstart",handleStart, false);
+    // preventDefault(e);
+    // console.log(`touchstart`);
+    // const rect = event.target.getBoundingClientRect();
+    // oldX = (event.touches[0].clientX - window.pageXOffset - rect.left);
+    // oldY = (event.touches[0].clientY - window.pageYOffset - rect.top);
+    // // oldY = e.offsetY;
+    // // oldX = e.offsetX;
+    // canvas_mouse_event=true;
+
+//touchend：フラグをfalse
+can.addEventListener("touchend", handleEnd, false);
+// $(can).on("touchend",function(e){
+//     preventDefault(e);
+//     canvas_mouse_event = false;
+// });
+
+//touchmove：フラグがTrueだったら描く ※e：イベント引数取得
+can.addEventListener("touchmove", handleMove, false);
+// $(can).on("touchmove", function(e){
+//     preventDefault(e);
+//     // console.log(e.offsetX);
+//     if(canvas_mouse_event==true){
+//         const px = e.offsetX;
+//         const py = e.offsetY;
+//         ctx.strokeStyle = color.value;
+//         ctx.lineWidth = bold_line;
+//         ctx.beginPath();
+//         ctx.lineJoin= "round";
+//         ctx.lineCap = "round";
+//         ctx.moveTo(oldX, oldY);
+//         ctx.lineTo(px, py);
+//         ctx.stroke();
+//         oldX = px;
+//         oldY = py;
+//     }
+// });
+// Touch Cancel
+can.addEventListener("touchcancel", handleCancel, false);
+
   
     //あをクリックしたら
     
@@ -249,10 +260,92 @@ function clearCanvas(){
     ctx.clearRect(0, 0, can.width, can.height);  
 }
 
+//TouchEventの関数
+
+function handleStart(e) {
+    e.preventDefault();
+    console.log("touchstart.");
+    let touches = e.changedTouches;
+  
+    for (let i = 0; i < touches.length; i++) {
+      console.log("touchstart:" + i + "...");
+      ongoingTouches.push(copyTouch(touches[i]));
+      let color = colorForTouch(touches[i]);
+      ctx.beginPath();
+      ctx.arc(touches[i].pageX, touches[i].pageY, 4, 0, 2 * Math.PI, false);  // a circle at the start
+      ctx.fillStyle = color;
+      ctx.fill();
+      console.log("touchstart:" + i + ".");
+    }
+  }
+  
+  function handleMove(evt) {
+    evt.preventDefault();
+    let touches = evt.changedTouches;
+  
+    for (let i = 0; i < touches.length; i++) {
+      let color = colorForTouch(touches[i]);
+      let idx = ongoingTouchIndexById(touches[i].identifier);
+  
+      if (idx >= 0) {
+        console.log("continuing touch "+idx);
+        ctx.beginPath();
+        console.log("ctx.moveTo(" + ongoingTouches[idx].pageX + ", " + ongoingTouches[idx].pageY + ");");
+        ctx.moveTo(ongoingTouches[idx].pageX, ongoingTouches[idx].pageY);
+        console.log("ctx.lineTo(" + touches[i].pageX + ", " + touches[i].pageY + ");");
+        ctx.lineTo(touches[i].pageX, touches[i].pageY);
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = color;
+        ctx.stroke();
+  
+        ongoingTouches.splice(idx, 1, copyTouch(touches[i]));  // swap in the new touch record
+        console.log(".");
+      } else {
+        console.log("can't figure out which touch to continue");
+      }
+    }
+  }
+  
+  function handleEnd(evt) {
+    evt.preventDefault();
+    log("touchend");
+    let touches = evt.changedTouches;
+  
+    for (let i = 0; i < touches.length; i++) {
+      let color = colorForTouch(touches[i]);
+      let idx = ongoingTouchIndexById(touches[i].identifier);
+  
+      if (idx >= 0) {
+        ctx.lineWidth = 4;
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.moveTo(ongoingTouches[idx].pageX, ongoingTouches[idx].pageY);
+        ctx.lineTo(touches[i].pageX, touches[i].pageY);
+        ctx.fillRect(touches[i].pageX - 4, touches[i].pageY - 4, 8, 8);  // and a square at the end
+        ongoingTouches.splice(idx, 1);  // remove it; we're done
+      } else {
+        console.log("can't figure out which touch to end");
+      }
+    }
+  }
+  
+  function handleCancel(evt) {
+    evt.preventDefault();
+    console.log("touchcancel.");
+    let touches = evt.changedTouches;
+  
+    for (var i = 0; i < touches.length; i++) {
+      let idx = ongoingTouchIndexById(touches[i].identifier);
+      ongoingTouches.splice(idx, 1);  // remove it; we're done
+    }
+  }
+  
+
+
+
+
+
 
 
 })
 
-
-
-// デバッグ関数
