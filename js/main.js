@@ -262,10 +262,10 @@ function clearCanvas(){
 
 //TouchEventの関数
 
-function handleStart(e) {
-    e.preventDefault();
+function handleStart(evt) {
+    evt.preventDefault();
     console.log("touchstart.");
-    let touches = e.changedTouches;
+    let touches = evt.changedTouches;
   
     for (let i = 0; i < touches.length; i++) {
       console.log("touchstart:" + i + "...");
@@ -308,7 +308,7 @@ function handleStart(e) {
   
   function handleEnd(evt) {
     evt.preventDefault();
-    log("touchend");
+    console.log("touchend");
     let touches = evt.changedTouches;
   
     for (let i = 0; i < touches.length; i++) {
@@ -340,7 +340,23 @@ function handleStart(e) {
     }
   }
   
-
+  
+  // Prevent scrolling when touching the canvas
+document.body.addEventListener("touchstart", function (e) {
+    if (e.target == can) {
+      e.preventDefault();
+    }
+  }, false);
+  document.body.addEventListener("touchend", function (e) {
+    if (e.target == can) {
+      e.preventDefault();
+    }
+  }, false);
+  document.body.addEventListener("touchmove", function (e) {
+    if (e.target == can) {
+      e.preventDefault();
+    }
+  }, false);
 
 
 
