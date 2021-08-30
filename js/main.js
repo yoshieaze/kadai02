@@ -286,6 +286,7 @@ function handleStart(evt) {
     if(canvas_mouse_event == true){
         const px = evt.clientX - c.getBoundingClientRect().left;
         const py = evt.clientY - c.getBoundingClientRect().top;
+        console.log(px,py);
         ctx.strokeStyle = color.value;
         ctx.lineWidth = bold_line;
         ctx.beginPath();
