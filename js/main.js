@@ -282,29 +282,45 @@ function handleStart(evt) {
   function handleMove(evt) {
     evt.preventDefault();
     let touches = evt.changedTouches;
-  
-    for (let i = 0; i < touches.length; i++) {
-      let color = colorForTouch(touches[i]);
-      let idx = ongoingTouchIndexById(touches[i].identifier);
-  
-      if (idx >= 0) {
-        console.log("continuing touch "+idx);
+    
+    if(canvas_mouse_event == true){
+        const px = evt.clientX - c.getBoundingClientRect().left;
+        const py = evt.clientY - c.getBoundingClientRect().top;
+        ctx.strokeStyle = color.value;
+        ctx.lineWidth = bold_line;
         ctx.beginPath();
-        console.log("ctx.moveTo(" + ongoingTouches[idx].pageX + ", " + ongoingTouches[idx].pageY + ");");
-        ctx.moveTo(ongoingTouches[idx].pageX, ongoingTouches[idx].pageY);
-        console.log("ctx.lineTo(" + touches[i].pageX + ", " + touches[i].pageY + ");");
-        ctx.lineTo(touches[i].pageX, touches[i].pageY);
-        ctx.lineWidth = 4;
-        ctx.strokeStyle = color;
+        ctx.lineJoin= "round";
+        ctx.lineCap = "round";
+        ctx.moveTo(oldX, oldY);
+        ctx.lineTo(px, py);
         ctx.stroke();
-  
-        ongoingTouches.splice(idx, 1, copyTouch(touches[i]));  // swap in the new touch record
-        console.log(".");
-      } else {
-        console.log("can't figure out which touch to continue");
-      }
-    }
+        oldX = px;
+        oldY = py;
+
+
+        // for (let i = 0; i < touches.length; i++) {
+        // let color = colorForTouch(touches[i]);
+        // let idx = ongoingTouchIndexById(touches[i].identifier);
+    
+        // if (idx >= 0) {
+        //     console.log("continuing touch "+idx);
+        //     ctx.beginPath();
+        //     console.log("ctx.moveTo(" + ongoingTouches[idx].pageX + ", " + ongoingTouches[idx].pageY + ");");
+        //     ctx.moveTo(ongoingTouches[idx].pageX, ongoingTouches[idx].pageY);
+        //     console.log("ctx.lineTo(" + touches[i].pageX + ", " + touches[i].pageY + ");");
+        //     ctx.lineTo(touches[i].pageX, touches[i].pageY);
+        //     ctx.lineWidth = 4;
+        //     ctx.strokeStyle = color;
+        //     ctx.stroke();
+    
+        //     ongoingTouches.splice(idx, 1, copyTouch(touches[i]));  // swap in the new touch record
+        //     console.log(".");
+        // } else {
+        //     console.log("can't figure out which touch to continue");
+        // }
+        // }
   }
+}
   
   function handleEnd(evt) {
     evt.preventDefault();
