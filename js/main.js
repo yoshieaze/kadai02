@@ -265,18 +265,23 @@ function clearCanvas(){
 function handleStart(evt) {
     evt.preventDefault();
     console.log("touchstart.");
-    let touches = evt.changedTouches;
+    canvas_mouse_event=true;
+    oldX = evt.clientX - c.getBoundingClientRect().left;
+    oldY = evt.clientY - c.getBoundingClientRect().top;
+    console.log(`oldX, oldY:${oldX},${oldY}`);
+    // let touches = evt.changedTouches;
   
-    for (let i = 0; i < touches.length; i++) {
-      console.log("touchstart:" + i + "...");
-      ongoingTouches.push(copyTouch(touches[i]));
-      let color = colorForTouch(touches[i]);
-      ctx.beginPath();
-      ctx.arc(touches[i].pageX, touches[i].pageY, 4, 0, 2 * Math.PI, false);  // a circle at the start
-      ctx.fillStyle = color;
-      ctx.fill();
-      console.log("touchstart:" + i + ".");
-    }
+    // for (let i = 0; i < touches.length; i++) {
+    //   console.log("touchstart:" + i + "...");
+    //   ongoingTouches.push(copyTouch(touches[i]));
+    //   let color = colorForTouch(touches[i]);
+    //   ctx.beginPath();
+    //   ctx.arc(touches[i].pageX, touches[i].pageY, 4, 0, 2 * Math.PI, false);  // a circle at the start
+    //   ctx.fillStyle = color;
+    //   ctx.fill();
+    //   console.log("touchstart:" + i + ".");
+
+    // }
   }
   
   function handleMove(evt) {
