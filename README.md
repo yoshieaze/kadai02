@@ -26,6 +26,7 @@
   <br>
   b. 作品の縮小表示<br>
   LocalStorageに保存した作品を、リサイズしつつ、作品の枠に収まるようにしています。<br>
+  <br>
   c. 現在編集中のページがわかりやすくなるように表示を可変させる<br>
   classの付け替えで現在編集されているページの枠が太く表示されるようにしました。<br>
   https://dotinstall.com/lessons/carousel_js<br>
