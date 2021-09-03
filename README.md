@@ -30,6 +30,10 @@
   c. 現在編集中のページがわかりやすくなるように表示を可変させる<br>
   classの付け替えで現在編集されているページの枠が太く表示されるようにしました。<br>
   https://dotinstall.com/lessons/carousel_js<br>
+  <br>
+  d.追加実装 ZIPダウンロード
+  かみしばいをダウンロードできるようにしました。
+  https://code-pocket.info/20190629234/
 
 ### 3. 疑問<br>
 iPadのTouchEventも拾って、ApplePenでも動くようにしたいのですが、<br>
