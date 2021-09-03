@@ -200,7 +200,8 @@ html{
     width: 90%;
 }
 
-#closebtn{
+#closebtn,
+#saveimg {
     font-size: 20px;
     width: 120px;
     border: 2px solid #f69679;

@@ -289,8 +289,10 @@ function handleStart(evt) {
     let touches = evt.changedTouches;
     
     if(canvas_mouse_event == true){
+        console.log("moving!")
         const px = evt.clientX - c.getBoundingClientRect().left;
         const py = evt.clientY - c.getBoundingClientRect().top;
+
         console.log(px,py);
         ctx.strokeStyle = color.value;
         ctx.lineWidth = bold_line;
